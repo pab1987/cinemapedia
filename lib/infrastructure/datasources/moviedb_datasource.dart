@@ -15,7 +15,7 @@ class MoviedbDatasource extends MoviesDatasource {
 
   @override
   Future<List<Movie>> getNowPlaying({int page = 1}) async {
-    final response = await dio.get('/now_playing');
+    final response = await dio.get('/movie/now_playing');
     final movieDBReaponse = MovieDbResponse.fromJson(response.data);
 
     final List<Movie> movies = movieDBReaponse.results
