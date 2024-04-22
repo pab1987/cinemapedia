@@ -1,4 +1,4 @@
-import 'package:cinemapedia/infrastructure/models/moviedb/movie_detains.dart';
+import 'package:cinemapedia/infrastructure/models/moviedb/movie_details.dart';
 import 'package:dio/dio.dart';
 import 'package:cinemapedia/config/constants/environment.dart';
 import 'package:cinemapedia/domain/datasourses/movies_datasource.dart';
@@ -60,5 +60,16 @@ class MoviedbDatasource extends MoviesDatasource {
 
     final Movie movie = MovieMapper.movieDetailsToEntity(movieDetails);
     return movie;
+  }
+  
+  @override
+  Future<List<Movie>> searchMovie(String query) async{
+    final response = await dio.get(
+      '/search/movie', 
+      queryParameters: {
+        'query': query
+      }
+    );
+    return _jsonToMovies(response.data);
   }
 }
