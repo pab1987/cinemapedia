@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
   //Nombre de la ruta
   static const name = "home-screen";
-  final Widget childView;
+  final StatefulNavigationShell childView;
 
   const HomeScreen({
     super.key, 
@@ -13,11 +14,12 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String location = GoRouterState.of(context).uri.path;
     return Scaffold(
-      body: Center(
-        child: childView,
-      ),
-      bottomNavigationBar: const CustomBottomNavigation(),
+      body: childView,
+      bottomNavigationBar: location.startsWith('/movie') 
+        ? null  
+        : CustomBottomNavigation(currentChild: childView,),
     );
   }
 }
