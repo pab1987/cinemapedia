@@ -1,4 +1,11 @@
+import 'package:isar/isar.dart';
+
+part 'movie.g.dart';
+
+//Se integra isar como gestor de base de datos local de la aplicación
+@collection
 class Movie {
+  Id? isarId;
   final bool adult;
   final String backdropPath;
   final List<String> genreIds;

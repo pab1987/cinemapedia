@@ -8,3 +8,9 @@
 4. Crear el archivo en config para manejar las constantes 
 5. Integrar Dio para las peticiones http
 6. Instalar flutter_riverpod
+7. Cambios en la entidad, hay que ejecutar el comando
+
+```
+flutter pub run build_runner build  
+
+```

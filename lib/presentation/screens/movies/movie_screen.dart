@@ -1,4 +1,6 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:cinemapedia/presentation/providers/storage/local_storage_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cinemapedia/config/helpers/human_format.dart';
@@ -46,20 +48,26 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
   }
 }
 
-class _CustomSliverAppBar extends StatelessWidget {
+class _CustomSliverAppBar extends ConsumerWidget {
   final Movie movie;
 
   const _CustomSliverAppBar({required this.movie});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final size = MediaQuery.of(context).size;
     return SliverAppBar(
       backgroundColor: Colors.black,
       expandedHeight: size.height * 0.7,
       foregroundColor: Colors.white,
+      actions: [
+        IconButton(
+            onPressed: () {
+              ref.watch(localStorageRepositoryProvider).toggleFavorite(movie);
+            },
+            icon: const Icon(Icons.favorite_border))
+      ],
       flexibleSpace: FlexibleSpaceBar(
-        
         background: Stack(
           children: [
             SizedBox.expand(
@@ -67,32 +75,59 @@ class _CustomSliverAppBar extends StatelessWidget {
                 movie.posterPath,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
-                  if(loadingProgress != null) return const SizedBox();
+                  if (loadingProgress != null) return const SizedBox();
                   return FadeIn(child: child);
                 },
               ),
             ),
-            const SizedBox.expand(
-              child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: [1, 1.0],
-                          colors: [Colors.transparent, Colors.black87]))),
+            _CustomGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              stops: const [0.0, 0.2],
+              colors: const [Colors.black54, Colors.transparent],
             ),
-            const SizedBox.expand(
-              child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          stops: [0.0, 0.3],
-                          colors: [Colors.black87, Colors.transparent]))),
-            )
+            _CustomGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: const [0.8, 1.0],
+              colors: const [Colors.transparent, Colors.black54],
+            ),
+            _CustomGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.centerRight,
+              stops: const [0.0, 0.3],
+              colors: const [Colors.black87, Colors.transparent],
+            ),
           ],
         ),
       ),
     );
+  }
+}
+
+class _CustomGradient extends StatelessWidget {
+  final AlignmentGeometry? begin;
+  final AlignmentGeometry? end;
+  final List<double> stops;
+  final List<Color> colors;
+
+  const _CustomGradient({
+    this.begin,
+    this.end,
+    required this.stops,
+    required this.colors,
+  }) : assert(stops.length == 2, 'stops must contain exactly 2 double values.');
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.expand(
+        child: DecoratedBox(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: begin ?? Alignment.center,
+                    end: end ?? Alignment.center,
+                    stops: stops,
+                    colors: colors))));
   }
 }
 
@@ -105,6 +140,8 @@ class _MovieDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final textStyle = Theme.of(context).textTheme;
+    final Uri url =
+        Uri.parse('https://wxw.cinecalidad.gg/ver-pelicula/the-marvels/');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,8 +160,9 @@ class _MovieDetails extends StatelessWidget {
                       width: size.width * 0.3,
                     ),
                   ),
-                  const SizedBox(height: 10,),
-
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Row(
                     children: [
                       const Icon(
@@ -132,7 +170,10 @@ class _MovieDetails extends StatelessWidget {
                         color: Color.fromARGB(255, 253, 157, 1),
                       ),
                       Text(HumanFormats.number(movie.voteAverage),
-                          style: textStyle.bodyMedium ?.copyWith(color: Colors.black, fontWeight: FontWeight.bold,)),
+                          style: textStyle.bodyMedium?.copyWith(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          )),
                       const SizedBox(width: 10),
                       const Icon(
                         Icons.visibility_outlined,
@@ -161,6 +202,28 @@ class _MovieDetails extends StatelessWidget {
                       style: textStyle.titleLarge,
                     ),
                     Text(movie.overview),
+                    TextButton(
+                      onPressed: () {
+                        _launchURL(url);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                      child: const Text(
+                        'Ver película onLine',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25
+                        ),
+                      ),
+                    )
                   ],
                 ),
               )
@@ -184,22 +247,27 @@ class _MovieDetails extends StatelessWidget {
           ),
         ),
 
-        _ActorsByMovie(movieId: movie.id.toString(),),
+        _ActorsByMovie(
+          movieId: movie.id.toString(),
+        ),
         const SizedBox(
           height: 50,
         )
       ],
     );
   }
-}
 
+  Future<void> _launchURL(Uri url) async {
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+}
 
 class _ActorsByMovie extends ConsumerWidget {
   final String movieId;
-  
-  const _ActorsByMovie({
-    required this.movieId
-  });
+
+  const _ActorsByMovie({required this.movieId});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -235,20 +303,16 @@ class _ActorsByMovie extends ConsumerWidget {
                   height: 5,
                 ),
                 Text(actor.name, maxLines: 2),
-                Text(
-                  actor.character ?? '', 
-                  maxLines: 2,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold, 
-                    overflow: TextOverflow.ellipsis
-                  )
-                ),
-                
-
+                Text(actor.character ?? '',
+                    maxLines: 2,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        overflow: TextOverflow.ellipsis)),
               ],
             ),
           );
-        },),
+        },
+      ),
     );
   }
 }
