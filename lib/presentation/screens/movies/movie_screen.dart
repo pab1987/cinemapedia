@@ -1,5 +1,4 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:cinemapedia/presentation/providers/storage/local_storage_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,8 +139,6 @@ class _MovieDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final textStyle = Theme.of(context).textTheme;
-    final Uri url =
-        Uri.parse('https://wxw.cinecalidad.gg/ver-pelicula/the-marvels/');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,28 +199,6 @@ class _MovieDetails extends StatelessWidget {
                       style: textStyle.titleLarge,
                     ),
                     Text(movie.overview),
-                    TextButton(
-                      onPressed: () {
-                        _launchURL(url);
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.blue),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                      ),
-                      child: const Text(
-                        'Ver película onLine',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25
-                        ),
-                      ),
-                    )
                   ],
                 ),
               )
@@ -255,12 +230,6 @@ class _MovieDetails extends StatelessWidget {
         )
       ],
     );
-  }
-
-  Future<void> _launchURL(Uri url) async {
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
-    }
   }
 }
 
