@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-
 import 'package:cinemapedia/config/helpers/human_format.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 
@@ -16,8 +15,13 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   StreamController<bool> isLoadingStream = StreamController.broadcast();
   Timer? _debounceTimer;
 
-  SearchMovieDelegate(
-      {required this.searchMoviesCallback, required this.initialMovies});
+  SearchMovieDelegate({
+    required this.searchMoviesCallback, 
+    required this.initialMovies
+  }):super(
+    searchFieldLabel: 'Buscar películas',
+    // textInputAction: TextInputAction.done
+  );
 
   ///Función encargada de emitir el resultado de la busqueda de las películas
   void _onQueryChanged(String query) {
@@ -58,8 +62,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     );
   }
 
-  @override
-  String get searchFieldLabel => 'Buscar película';
+  //@override
+  //String get searchFieldLabel => 'Buscar película';
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -131,15 +135,17 @@ class _MovieItem extends StatelessWidget {
           children: [
             //Image
             SizedBox(
-              width: size.width * 0.2,
-              child: ClipRRect(
+                width: size.width * 0.2,
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    movie.posterPath,
-                    loadingBuilder: (context, child, loadingProgress) =>
-                        FadeIn(child: child),
-                  )),
-            ),
+                  child: FadeInImage(
+                    height: 130,
+                    fit: BoxFit.cover,
+                    image: NetworkImage(movie.posterPath),
+                    placeholder: const AssetImage('assets/loaders/bottle-loader.gif'),
+                  )
+                ),
+              ),
             const SizedBox(
               width: 10,
             ),
@@ -165,7 +171,7 @@ class _MovieItem extends StatelessWidget {
                         width: 5,
                       ),
                       Text(
-                        HumanFormats.number(movie.voteAverage),
+                        HumanFormats.number(movie.voteAverage, 1),
                         style: textStyles.bodyMedium!.copyWith(
                           color: Colors.yellow.shade800,
                         ),

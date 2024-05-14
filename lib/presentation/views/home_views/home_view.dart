@@ -71,14 +71,14 @@ class HomeViewState extends ConsumerState<HomeView> {
                     .loadNextPage(), //El read se usa dentro de callback o funciones
               ),
 
-              MovieHorizontalListview(
+              /* MovieHorizontalListview(
                 movies: popularMovies,
                 title: 'Popular',
                 //subTitle: '',
                 loadNextPage: () => ref
                     .read(popularMoviesProvider.notifier)
                     .loadNextPage(), //El read se usa dentro de callback o funciones
-              ),
+              ), */
               
               MovieHorizontalListview(
                 movies: toRated,

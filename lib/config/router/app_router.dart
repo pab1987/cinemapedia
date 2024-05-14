@@ -1,4 +1,5 @@
 // ignore: depend_on_referenced_packages
+import 'package:cinemapedia/presentation/views/home_views/popular_view.dart';
 import 'package:cinemapedia/presentation/views/views.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cinemapedia/presentation/screens/screens.dart';
@@ -31,8 +32,8 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/', 
-              builder: (context, state) => const HomeView(),
+              path: '/popular', 
+              builder: (context, state) => const PopularView(),
             )
           ]
         ),
