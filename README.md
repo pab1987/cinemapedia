@@ -14,3 +14,21 @@
 flutter pub run build_runner build  
 
 ```
+
+# Pro
+Para cambiar el nombre de la aplicación
+```
+dart run change_app_package_name:main com.pablolara.movieVerse
+```
+
+Para cambiar el icono de la aplicación
+```
+dart run flutter_launcher_icons
+
+```
+
+Para cambiar el splash screen
+```
+dart run flutter_native_splash:create
+```
+

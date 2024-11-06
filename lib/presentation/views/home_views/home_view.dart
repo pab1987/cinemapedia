@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/date_display_widget/date_display_widget.dart';
@@ -27,9 +28,11 @@ class HomeViewState extends ConsumerState<HomeView> {
     final initialLoading = ref.watch(initialLoadingProvider);
     if (initialLoading) return FullScreenLoader();
 
+    FlutterNativeSplash.remove(); //Remueve el splash cuando ya han cargado las pantallas
+
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final slideshowMovies = ref.watch(moviesSlideshowProvider);
-    final popularMovies = ref.watch(popularMoviesProvider);
+    //final popularMovies = ref.watch(popularMoviesProvider);
     final getUpcoming = ref.watch(upcomingMoviesProvider);
     final toRated = ref.watch(topratedMoviesProvider);
 
